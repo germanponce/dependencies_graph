@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "dependencies_graph",
+    'name': "Dependencies Graph",
 
     'summary': """
         Visualize the dependencies graph for Odoo modules and JavaScript services""",
@@ -10,6 +10,7 @@
     # """,
 
     'author': "Adrian Chang",
+    'application': True,
     # 'website': "http://www.yourcompany.com",
 
     # Categories can be used to filter modules in modules listing
