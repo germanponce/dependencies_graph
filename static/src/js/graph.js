@@ -9,40 +9,16 @@ odoo.define('dependencies_graph.graph', function (require) {
         });
     };
 
-    var graph_options = {
-        layout: {
-            improvedLayout: true,
-            hierarchical: {
-                enabled: false,
-                nodeSpacing: 100,
-                treeSpacing: 200,
-                blockShifting: true,
-                edgeMinimization: true,
-                parentCentralization: true,
-                direction: 'UD',        // UD, DU, LR, RL
-                sortMethod: 'hubsize'   // hubsize, directed
-            }
+    var selector = '#graph';
+    var options = {
+        configure: {
+            enabled: true,
+            filter: true,
+            showButton: true
         }
     };
 
-    var tree_options = {
-        physics: false,
-        layout: {
-            improvedLayout: true,
-            hierarchical: {
-                enabled: true,
-                // levelSeparation: 250,
-                nodeSpacing: 50,
-                treeSpacing: 50,
-                blockShifting: true,
-                edgeMinimization: true,
-                parentCentralization: false,
-                direction: 'LR',        // UD, DU, LR, RL
-            }
-        }
-    };
-
-    window.odoo_children = function (selector) {
+    window.odoo_children = function () {
         var module = prompt('write a module name');
         session.rpc('/dependencies_graph/' + module).done(function (result) {
             var deps = JSON.parse(result);
@@ -63,7 +39,6 @@ odoo.define('dependencies_graph.graph', function (require) {
                     edges.update({from: m, to: child, arrows: 'to'})
                 })
             }
-            ;
 
             // create a network
             var container = $(selector)[0];
@@ -71,13 +46,14 @@ odoo.define('dependencies_graph.graph', function (require) {
                 nodes: nodes,
                 edges: edges
             };
-            var network = new vis.Network(container, data, tree_options);
+            options['configure']['container'] = $('#settings')[0];
+            var network = new vis.Network(container, data, options);
 
             return network
         });
     };
 
-    window.odoo_graph = function (selector) {
+    window.odoo_graph = function () {
         var module = prompt('write a module name if you want to filter by a module');
         session.rpc('/dependencies_graph/' + module).done(function (result) {
             var deps = JSON.parse(result);
@@ -106,13 +82,14 @@ odoo.define('dependencies_graph.graph', function (require) {
                 nodes: nodes,
                 edges: edges
             };
-            var network = new vis.Network(container, data, graph_options);
+            options['configure']['container'] = $('#settings')[0];
+            var network = new vis.Network(container, data, options);
 
             return network
         });
     };
 
-    window.js_graph = function (selector) {
+    window.js_graph = function () {
         var keywords = prompt('write keywords separated by spaces to filter').split(" ");
         var nodes = new vis.DataSet([]);
         var edges = new vis.DataSet([]);
@@ -148,7 +125,8 @@ odoo.define('dependencies_graph.graph', function (require) {
             nodes: nodes,
             edges: edges
         };
-        var network = new vis.Network(container, data, tree_options);
+        options['configure']['container'] = $('#settings')[0];
+        var network = new vis.Network(container, data, options);
 
         return network
     };

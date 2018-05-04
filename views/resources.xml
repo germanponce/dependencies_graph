@@ -13,7 +13,13 @@
                     <link rel="stylesheet" href="/dependencies_graph/static/lib/vis.min.css"/>
                 </head>
                 <body>
-                    <h1>Hello world</h1>
+                    <div class="row">
+                        <h1 class="text-center">Dependencies Graph</h1>
+                        <div id="settings" class="col-md-4">
+                            <h2 class="text-center">Settings</h2>
+                        </div>
+                        <div id="graph" class="col-md-8"></div>
+                    </div>
                 </body>
             </html>
         </template>
