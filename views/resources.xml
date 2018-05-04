@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="assets_backend" name="backend assets" inherit_id="web.assets_backend">
-        <xpath expr=".">
-            <script type="text/javascript" src="/dependencies_graph/static/lib/vis.min.js"/>
-            <script type="text/javascript" src="/dependencies_graph/static/src/js/graph.js"/>
-            <link rel="stylesheet" href="/dependencies_graph/static/lib/vis.min.css"/>
-        </xpath>
-    </template>
+    <data>
+        <template id="graph">
+            <html>
+                <head>
+                    <!--Load Odoo assets -->
+                    <t t-call-assets="web.assets_common"/>
+                    <t t-call-assets="web.assets_backend"/>
+
+                    <script type="text/javascript" src="/dependencies_graph/static/lib/vis.min.js"/>
+                    <script type="text/javascript" src="/dependencies_graph/static/src/js/graph.js"/>
+                    <link rel="stylesheet" href="/dependencies_graph/static/lib/vis.min.css"/>
+                </head>
+                <body>
+                    <h1>Hello world</h1>
+                </body>
+            </html>
+        </template>
+    </data>
 </odoo>

@@ -44,7 +44,7 @@ odoo.define('dependencies_graph.graph', function (require) {
 
     window.odoo_children = function (selector) {
         var module = prompt('write a module name');
-        session.rpc('/dependencies_graph/graph/' + module).done(function (result) {
+        session.rpc('/dependencies_graph/' + module).done(function (result) {
             var deps = JSON.parse(result);
             var nodes = new vis.DataSet([]);
             var edges = new vis.DataSet([]);
@@ -79,7 +79,7 @@ odoo.define('dependencies_graph.graph', function (require) {
 
     window.odoo_graph = function (selector) {
         var module = prompt('write a module name if you want to filter by a module');
-        session.rpc('/jitmo/graph/' + module).done(function (result) {
+        session.rpc('/dependencies_graph/' + module).done(function (result) {
             var deps = JSON.parse(result);
             var nodes = new vis.DataSet([]);
             var edges = new vis.DataSet([]);
