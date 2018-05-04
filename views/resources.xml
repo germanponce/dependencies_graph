@@ -11,6 +11,7 @@
                     <script type="text/javascript" src="/dependencies_graph/static/lib/vis.min.js"/>
                     <script type="text/javascript" src="/dependencies_graph/static/src/js/graph.js"/>
                     <link rel="stylesheet" href="/dependencies_graph/static/lib/vis.min.css"/>
+                    <link rel="stylesheet" href="/dependencies_graph/static/src/css/graph.css"/>
                 </head>
                 <body>
                     <div class="row">

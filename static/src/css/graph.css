@@ -1,0 +1,10 @@
+#settings input[type="range"] {
+    display: inline-block;
+    padding-right: 10px;
+}
+
+#settings .vis-configuration-wrapper {
+    height: 700px;
+    overflow: auto;
+    width: min-content;
+}

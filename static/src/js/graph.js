@@ -25,6 +25,7 @@ odoo.define('dependencies_graph.graph', function (require) {
         var keywords = $('#keywords').val().split(" ");
 
         window.dependencies_graph[type](module, keywords);
+        console.log('generated', module, keywords);
     };
 
     w.module_children = function (module, keywords) {
