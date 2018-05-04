@@ -1,6 +1,7 @@
 odoo.define('dependencies_graph.graph', function (require) {
     "use strict";
 
+    var w = window['dependencies_graph'] = {};
     var session = require('web.session');
 
     var filter = function (string, keywords) {
@@ -18,8 +19,15 @@ odoo.define('dependencies_graph.graph', function (require) {
         }
     };
 
-    window.odoo_children = function () {
-        var module = prompt('write a module name');
+    w.generate = function () {
+        var type = $('#type').val();
+        var module = $('#module').val();
+        var keywords = $('#keywords').val().split(" ");
+
+        window.dependencies_graph[type](module, keywords);
+    };
+
+    w.module_children = function (module, keywords) {
         session.rpc('/dependencies_graph/' + module).done(function (result) {
             var deps = JSON.parse(result);
             var nodes = new vis.DataSet([]);
@@ -53,14 +61,11 @@ odoo.define('dependencies_graph.graph', function (require) {
         });
     };
 
-    window.odoo_graph = function () {
-        var module = prompt('write a module name if you want to filter by a module');
+    w.module_graph = function (module, keywords) {
         session.rpc('/dependencies_graph/' + module).done(function (result) {
             var deps = JSON.parse(result);
             var nodes = new vis.DataSet([]);
             var edges = new vis.DataSet([]);
-
-            var keywords = prompt('write keywords separated by spaces to filter').split(" ");
 
             _.each(_.keys(deps), function (dep) {
                 if (filter(dep, keywords) || dep === module) {
@@ -89,8 +94,7 @@ odoo.define('dependencies_graph.graph', function (require) {
         });
     };
 
-    window.js_graph = function () {
-        var keywords = prompt('write keywords separated by spaces to filter').split(" ");
+    w.js_graph = function (module, keywords) {
         var nodes = new vis.DataSet([]);
         var edges = new vis.DataSet([]);
 
