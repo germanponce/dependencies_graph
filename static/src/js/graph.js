@@ -31,9 +31,11 @@ odoo.define('dependencies_graph.graph', function (require) {
                 // this will immediately fix the height of the configuration
                 // wrapper to prevent unecessary scrolls in chrome.
                 // see https://github.com/almende/vis/issues/1568
-                var container = options['configure']['container'];
-                var div = container.getElementsByClassName('vis-configuration-wrapper')[0];
-                div.style["height"] = div.getBoundingClientRect().height + "px";
+                var div = $('.vis-configuration-wrapper');
+                var top = div.scrollTop();
+                _.delay(function () {
+                    $('.vis-configuration-wrapper').scrollTop(top)
+                }, 0);
             });
         });
     };
