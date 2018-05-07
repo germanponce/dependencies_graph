@@ -24,11 +24,22 @@ odoo.define('dependencies_graph.graph', function (require) {
         var module = $('#module').val();
         var keywords = $('#keywords').val().split(" ");
 
-        window.dependencies_graph[type](module, keywords);
-        console.log('generated', module, keywords);
+        window.dependencies_graph[type](module, keywords).done(function (network) {
+            console.log('generated', module, keywords);
+
+            network.on("configChange", function () {
+                // this will immediately fix the height of the configuration
+                // wrapper to prevent unecessary scrolls in chrome.
+                // see https://github.com/almende/vis/issues/1568
+                var container = options['configure']['container'];
+                var div = container.getElementsByClassName('vis-configuration-wrapper')[0];
+                div.style["height"] = div.getBoundingClientRect().height + "px";
+            });
+        });
     };
 
     w.module_children = function (module, keywords) {
+        var promise = $.Deferred();
         session.rpc('/dependencies_graph/' + module).done(function (result) {
             var deps = JSON.parse(result);
             var nodes = new vis.DataSet([]);
@@ -58,11 +69,13 @@ odoo.define('dependencies_graph.graph', function (require) {
             options['configure']['container'] = $('#settings')[0];
             var network = new vis.Network(container, data, options);
 
-            return network
+            promise.resolve(network);
         });
+        return promise;
     };
 
     w.module_graph = function (module, keywords) {
+        var promise = $.Deferred();
         session.rpc('/dependencies_graph/' + module).done(function (result) {
             var deps = JSON.parse(result);
             var nodes = new vis.DataSet([]);
@@ -91,11 +104,13 @@ odoo.define('dependencies_graph.graph', function (require) {
             options['configure']['container'] = $('#settings')[0];
             var network = new vis.Network(container, data, options);
 
-            return network
+            promise.resolve(network);
         });
+        return promise;
     };
 
     w.js_graph = function (module, keywords) {
+        var promise = $.Deferred();
         var nodes = new vis.DataSet([]);
         var edges = new vis.DataSet([]);
 
@@ -133,6 +148,7 @@ odoo.define('dependencies_graph.graph', function (require) {
         options['configure']['container'] = $('#settings')[0];
         var network = new vis.Network(container, data, options);
 
-        return network
+        promise.resolve(network);
+        return promise;
     };
 });
