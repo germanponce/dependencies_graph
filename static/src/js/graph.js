@@ -16,7 +16,10 @@ odoo.define('dependencies_graph.graph', function (require) {
             enabled: true,
             filter: 'layout',
             showButton: true
-        }
+        },
+        physics: {
+            stabilization: false
+        },
     };
 
     w.generate = function () {
