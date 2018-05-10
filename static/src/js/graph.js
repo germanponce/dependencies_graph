@@ -49,6 +49,12 @@ odoo.define('dependencies_graph.graph', function (require) {
             case 'module_children':
                 module.prop('disabled', false);
                 keywords.prop('disabled', true);
+                keywords.val('');
+                break;
+            case 'module_parents':
+                module.prop('disabled', false);
+                keywords.prop('disabled', true);
+                keywords.val('');
                 break;
             case 'module_graph':
                 module.prop('disabled', false);
@@ -56,6 +62,7 @@ odoo.define('dependencies_graph.graph', function (require) {
                 break;
             case 'js_graph':
                 module.prop('disabled', true);
+                module.val('');
                 keywords.prop('disabled', false);
                 break;
         }
@@ -78,8 +85,46 @@ odoo.define('dependencies_graph.graph', function (require) {
 
                 nodes.update({id: m, label: m});
                 _.each(children, function (child) {
-                    nodes.update({id: child, label: child});
-                    edges.update({from: m, to: child, arrows: 'to'})
+                    if (!nodes.get(child)) {
+                        nodes.update({id: child, label: child});
+                        edges.update({from: m, to: child, arrows: 'to'})
+                    }
+                })
+            }
+
+            // create a network
+            var container = $(selector)[0];
+            var data = {
+                nodes: nodes,
+                edges: edges
+            };
+            options['configure']['container'] = $('#settings')[0];
+            var network = new vis.Network(container, data, options);
+
+            promise.resolve(network);
+        });
+        return promise;
+    };
+
+    w.module_parents = function (module, keywords) {
+        var promise = $.Deferred();
+        session.rpc('/dependencies_graph/' + module).done(function (result) {
+            var deps = JSON.parse(result);
+            var nodes = new vis.DataSet([]);
+            var edges = new vis.DataSet([]);
+
+            var modules = [module];
+            while (modules.length > 0) {
+                var m = modules.shift();
+                var parents = deps[m];
+                modules = _.union(modules, parents);
+
+                nodes.update({id: m, label: m});
+                _.each(parents, function (p) {
+                    if (!nodes.get(p)) {
+                        nodes.update({id: p, label: p});
+                        edges.update({from: p, to: m, arrows: 'to'})
+                    }
                 })
             }
 

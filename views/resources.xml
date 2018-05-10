@@ -26,6 +26,7 @@
                                         <select id="type" class="form-control"
                                                 onchange="window.dependencies_graph.type_changed()">
                                             <option value="module_children">Odoo Module Children</option>
+                                            <option value="module_parents">Odoo Module Parents</option>
                                             <option value="module_graph">Odoo Module Graph</option>
                                             <option value="js_graph">JavaScript graph</option>
                                         </select>
