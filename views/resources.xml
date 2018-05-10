@@ -61,5 +61,14 @@
                 </body>
             </html>
         </template>
+
+        <record model="ir.actions.act_url" id="action_dependencies_graph">
+            <field name="name">Dependencies Graph</field>
+            <field name="url">/dependencies_graph/graph?debug=assets</field>
+            <field name="type">ir.actions.act_url</field>
+            <field name="target">self</field>
+        </record>
+        <menuitem id="menu_dependencies_graph" name="Dependencies Graph" sequence="10"
+                  action="action_dependencies_graph"/>
     </data>
 </odoo>
