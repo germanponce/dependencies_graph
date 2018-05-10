@@ -8,3 +8,7 @@
     overflow: auto;
     width: min-content;
 }
+
+#settings .vis-config-select {
+    width: unset;
+}

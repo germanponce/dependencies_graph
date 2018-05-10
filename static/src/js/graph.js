@@ -14,7 +14,7 @@ odoo.define('dependencies_graph.graph', function (require) {
     var options = {
         configure: {
             enabled: true,
-            filter: true,
+            filter: 'layout',
             showButton: true
         }
     };
@@ -27,16 +27,16 @@ odoo.define('dependencies_graph.graph', function (require) {
         window.dependencies_graph[type](module, keywords).done(function (network) {
             console.log('generated', module, keywords);
 
-            network.on("configChange", function () {
-                // this will immediately fix the height of the configuration
-                // wrapper to prevent unecessary scrolls in chrome.
-                // see https://github.com/almende/vis/issues/1568
-                var div = $('.vis-configuration-wrapper');
-                var top = div.scrollTop();
-                _.delay(function () {
-                    $('.vis-configuration-wrapper').scrollTop(top)
-                }, 0);
-            });
+            // network.on("configChange", function () {
+            //     // this will immediately fix the height of the configuration
+            //     // wrapper to prevent unecessary scrolls in chrome.
+            //     // see https://github.com/almende/vis/issues/1568
+            //     var div = $('.vis-configuration-wrapper');
+            //     var top = div.scrollTop();
+            //     _.delay(function () {
+            //         $('.vis-configuration-wrapper').scrollTop(top)
+            //     }, 0);
+            // });
         });
     };
 
