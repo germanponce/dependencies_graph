@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="graph">
+            <html>
+                <head>
+                    <!--Load Odoo assets -->
+                    <t t-call-assets="web.assets_common"/>
+                    <t t-call-assets="web.assets_backend"/>
+
+                    <script type="text/javascript" src="/dependencies_graph/static/lib/vis.min.js"/>
+                    <script type="text/javascript" src="/dependencies_graph/static/src/js/graph.js"/>
+                    <link rel="stylesheet" href="/dependencies_graph/static/lib/vis.min.css"/>
+                    <link rel="stylesheet" href="/dependencies_graph/static/src/css/graph.css"/>
+                </head>
+                <body>
+                    <div class="row">
+                        <h1 class="text-center">Dependencies Graph</h1>
+                        <div id="settings" class="col-md-4">
+                            <h2 class="text-center">Settings</h2>
+
+                            <div class="form-horizontal col-md-8">
+                                <div class="form-group">
+                                    <label for="type" class="col-sm-2 control-label">Type</label>
+                                    <div class="col-sm-10">
+                                        <select id="type" class="form-control"
+                                                onchange="window.dependencies_graph.type_changed()">
+                                            <option value="module_children">Odoo Module Children</option>
+                                            <option value="module_parents">Odoo Module Parents</option>
+                                            <!--<option value="module_graph">Odoo Module Graph</option>-->
+                                            <option value="js_graph">JavaScript graph</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="module" class="col-sm-2 control-label">Module</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="module"
+                                               placeholder="Module"></input>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="keywords" class="col-sm-2 control-label">Keywords</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="keywords"
+                                               placeholder="Keywords" disabled="true"></input>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-horizontal col-md-4">
+                                <div class="form-group">
+                                    <div class="col-sm-offset-2 col-sm-10">
+                                        <button type="submit" class="btn btn-default"
+                                                onclick="window.dependencies_graph.generate()">Generate
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div id="graph" class="col-md-8"></div>
+                    </div>
+                </body>
+            </html>
+        </template>
+
+        <record model="ir.actions.act_url" id="action_dependencies_graph">
+            <field name="name">Dependencies Graph</field>
+            <field name="url">/dependencies_graph/graph?debug=assets</field>
+            <field name="type">ir.actions.act_url</field>
+            <field name="target">self</field>
+        </record>
+        <menuitem id="menu_dependencies_graph" name="Dependencies Graph" sequence="10"
+                  action="action_dependencies_graph"/>
+    </data>
+</odoo>
