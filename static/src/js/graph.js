@@ -40,6 +40,27 @@ odoo.define('dependencies_graph.graph', function (require) {
         });
     };
 
+    w.type_changed = function () {
+        var type = $('#type').val();
+        var module = $('#module');
+        var keywords = $('#keywords');
+
+        switch (type) {
+            case 'module_children':
+                module.prop('disabled', false);
+                keywords.prop('disabled', true);
+                break;
+            case 'module_graph':
+                module.prop('disabled', false);
+                keywords.prop('disabled', false);
+                break;
+            case 'js_graph':
+                module.prop('disabled', true);
+                keywords.prop('disabled', false);
+                break;
+        }
+    };
+
     w.module_children = function (module, keywords) {
         var promise = $.Deferred();
         session.rpc('/dependencies_graph/' + module).done(function (result) {

@@ -23,9 +23,10 @@
                                 <div class="form-group">
                                     <label for="type" class="col-sm-2 control-label">Type</label>
                                     <div class="col-sm-10">
-                                        <select id="type" class="form-control">
-                                            <option value="module_children">Module Children</option>
-                                            <option value="module_graph">Module Graph</option>
+                                        <select id="type" class="form-control"
+                                                onchange="window.dependencies_graph.type_changed()">
+                                            <option value="module_children">Odoo Module Children</option>
+                                            <option value="module_graph">Odoo Module Graph</option>
                                             <option value="js_graph">JavaScript graph</option>
                                         </select>
                                     </div>
@@ -41,7 +42,7 @@
                                     <label for="keywords" class="col-sm-2 control-label">Keywords</label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" id="keywords"
-                                               placeholder="Keywords"></input>
+                                               placeholder="Keywords" disabled="true"></input>
                                     </div>
                                 </div>
                             </div>
