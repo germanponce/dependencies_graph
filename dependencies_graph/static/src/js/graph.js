@@ -68,6 +68,11 @@ odoo.define('dependencies_graph.graph', function (require) {
                 module.val('');
                 keywords.prop('disabled', false);
                 break;
+            case 'js_parents':
+                module.prop('disabled', false);
+                keywords.prop('disabled', true);
+                keywords.val('');
+                break;
         }
     };
 
@@ -209,6 +214,60 @@ odoo.define('dependencies_graph.graph', function (require) {
             })
 
         });
+
+        // create a network
+        var container = $(selector)[0];
+        var data = {
+            nodes: nodes,
+            edges: edges
+        };
+        options['configure']['container'] = $('#settings')[0];
+        var network = new vis.Network(container, data, options);
+
+        promise.resolve(network);
+        return promise;
+    };
+
+    w.js_parents = function (module, keywords) {
+        var promise = $.Deferred();
+        var nodes = new vis.DataSet([]);
+        var edges = new vis.DataSet([]);
+        var services = {}
+
+        _.each(window.odoo.__DEBUG__.services, function (value, key) {
+            if (typeof value === 'function' && filter(key, keywords)) {
+                services[key] = value;
+            }
+            if (typeof value === 'object') {
+                _.each(value, function (v, k) {
+                    if (typeof v === 'function') {
+                        var name = key.concat('.', k);
+                        if (filter(name, keywords)) {
+                            services[name] = v;
+                        }
+                    }
+                })
+            }
+        });
+
+        module = module.split(" ");
+        var modules = _.pairs(_.pick(services, module));
+
+        while(modules.length > 0){
+            var m = modules.pop()
+            var x = m[0];
+            var x_value = m[1];
+            _.each(services, function (y_value, y) {
+                if (x_value.prototype && x_value.prototype.__proto__.constructor === y_value) {
+                    nodes.update({id: x, label: x});
+                    nodes.update({id: y, label: y});
+                    edges.add({from: y, to: x, arrows: 'to'})
+
+                    modules.push([y, y_value]);
+                }
+            })
+
+        };
 
         // create a network
         var container = $(selector)[0];
