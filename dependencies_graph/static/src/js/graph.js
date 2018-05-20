@@ -51,7 +51,7 @@ odoo.define('dependencies_graph.graph', function (require) {
                     .attr("value",key)
                     .text(key));
         });
-        module.chosen({});
+        module.chosen({search_contains: true});
     };
 
     w.generate = function () {
@@ -77,33 +77,32 @@ odoo.define('dependencies_graph.graph', function (require) {
 
     w.type_changed = function () {
         var type = $('#type').val();
-        var module = $('#module');
-        var keywords = $('#keywords');
+        var module = $('#module').parents('.form-group');
+        var keywords = $('#keywords').parents('.form-group');
 
         switch (type) {
             case 'module_children':
-                module.prop('disabled', false);
-                keywords.prop('disabled', true);
+                module.show();
+                keywords.hide();
                 keywords.val('');
                 break;
             case 'module_parents':
-                module.prop('disabled', false);
-                keywords.prop('disabled', true);
+                module.show();
+                keywords.hide();
                 keywords.val('');
                 break;
             case 'module_graph':
-                module.prop('disabled', false);
-                keywords.prop('disabled', false);
+                module.show();
+                keywords.show();
                 break;
             case 'js_graph':
-                module.prop('disabled', true);
+                module.hide();
                 module.val('');
-                keywords.prop('disabled', false);
-                w.set_js_services();
+                keywords.show();
                 break;
             case 'js_parents':
-                module.prop('disabled', false);
-                keywords.prop('disabled', true);
+                module.show();
+                keywords.hide();
                 keywords.val('');
                 w.set_js_services();
                 break;
@@ -268,16 +267,15 @@ odoo.define('dependencies_graph.graph', function (require) {
         var edges = new vis.DataSet([]);
         var services = w.get_js_services();
 
-        module = module.split(" ");
         var modules = _.pairs(_.pick(services, module));
 
         while(modules.length > 0){
             var m = modules.pop()
             var x = m[0];
             var x_value = m[1];
+            nodes.update({id: x, label: x});
             _.each(services, function (y_value, y) {
-                if (x_value.prototype && x_value.prototype.__proto__.constructor === y_value) {
-                    nodes.update({id: x, label: x});
+                if (x_value.prototype && x_value.prototype.__proto__.constructor === y_value) {                    
                     nodes.update({id: y, label: y});
                     edges.add({from: y, to: x, arrows: 'to'})
 
