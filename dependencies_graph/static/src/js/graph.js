@@ -44,7 +44,7 @@ odoo.define('dependencies_graph.graph', function (require) {
 
     w.set_js_services = function () {
         var services = w.get_js_services();
-        var module = $('#module');
+        var module = $('#js-module');
         _.each(services, function (value, key) {
             module
                 .append($("<option></option>")
@@ -54,10 +54,32 @@ odoo.define('dependencies_graph.graph', function (require) {
         module.chosen({search_contains: true});
     };
 
+    w.set_odoo_modules = function () {
+        var module = $('#odoo-module');
+        session.rpc('/dependencies_graph/*').done(function (result) {
+            var deps = JSON.parse(result);
+            _.each(deps, function (value, key) {
+                module
+                    .append($("<option></option>")
+                        .attr("value",key)
+                        .text(key));
+            });
+            module.chosen({search_contains: true});
+        });
+    };
+
     w.generate = function () {
         var type = $('#type').val();
-        var module = $('#module').val();
+        var odoo_module = $('#odoo-module').val();
+        var js_services = $('#js-module').val();
         var keywords = $('#keywords').val().split(" ");
+
+        if(_.contains(['module_children', 'module_parents'], type)){
+            var module = odoo_module;
+        }
+        if(_.contains(['js_graph', 'js_parents'], type)){
+            var module = js_services;
+        }
 
         window.dependencies_graph[type](module, keywords).done(function (network) {
             console.log('generated', module, keywords);
@@ -77,37 +99,44 @@ odoo.define('dependencies_graph.graph', function (require) {
 
     w.type_changed = function () {
         var type = $('#type').val();
-        var module = $('#module').parents('.form-group');
+        var odoo_module = $('#odoo-module').parents('.form-group');
+        var js_services = $('#js-module').parents('.form-group');
         var keywords = $('#keywords').parents('.form-group');
 
         switch (type) {
             case 'module_children':
-                module.show();
+                odoo_module.show();
+                js_services.hide();
                 keywords.hide();
-                keywords.val('');
+                w.set_odoo_modules();
                 break;
             case 'module_parents':
-                module.show();
+                odoo_module.show();
+                js_services.hide();
                 keywords.hide();
-                keywords.val('');
+                w.set_odoo_modules();
                 break;
             case 'module_graph':
-                module.show();
+                odoo_module.show();
+                js_services.hide();
                 keywords.show();
+                w.set_odoo_modules();
                 break;
             case 'js_graph':
-                module.hide();
-                module.val('');
+                odoo_module.hide();
+                js_services.hide();
                 keywords.show();
                 break;
             case 'js_parents':
-                module.show();
+                odoo_module.hide();
+                js_services.show();
                 keywords.hide();
-                keywords.val('');
                 w.set_js_services();
                 break;
         }
     };
+
+    $(w.type_changed);
 
     w.module_children = function (module, keywords) {
         var promise = $.Deferred();
