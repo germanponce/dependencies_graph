@@ -77,7 +77,7 @@ odoo.define('dependencies_graph.graph', function (require) {
         if(_.contains(['module_children', 'module_parents'], type)){
             var module = odoo_module;
         }
-        if(_.contains(['js_graph', 'js_parents'], type)){
+        if(_.contains(['js_graph', 'js_parents', 'js_children'], type)){
             var module = js_services;
         }
 
@@ -128,6 +128,7 @@ odoo.define('dependencies_graph.graph', function (require) {
                 keywords.show();
                 break;
             case 'js_parents':
+            case 'js_children':
                 odoo_module.hide();
                 js_services.show();
                 keywords.hide();
@@ -307,6 +308,43 @@ odoo.define('dependencies_graph.graph', function (require) {
                 if (x_value.prototype && x_value.prototype.__proto__.constructor === y_value) {                    
                     nodes.update({id: y, label: y});
                     edges.add({from: y, to: x, arrows: 'to'})
+
+                    modules.push([y, y_value]);
+                }
+            })
+
+        };
+
+        // create a network
+        var container = $(selector)[0];
+        var data = {
+            nodes: nodes,
+            edges: edges
+        };
+        options['configure']['container'] = $('#settings')[0];
+        var network = new vis.Network(container, data, options);
+
+        promise.resolve(network);
+        return promise;
+    };
+
+    w.js_children = function (module, keywords) {
+        var promise = $.Deferred();
+        var nodes = new vis.DataSet([]);
+        var edges = new vis.DataSet([]);
+        var services = w.get_js_services();
+
+        var modules = _.pairs(_.pick(services, module));
+
+        while(modules.length > 0){
+            var m = modules.pop()
+            var x = m[0];
+            var x_value = m[1];
+            nodes.update({id: x, label: x});
+            _.each(services, function (y_value, y) {
+                if (y_value.prototype && y_value.prototype.__proto__.constructor === x_value) {
+                    nodes.update({id: y, label: y});
+                    edges.add({from: x, to: y, arrows: 'to'})
 
                     modules.push([y, y_value]);
                 }
