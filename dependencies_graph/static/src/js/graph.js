@@ -22,6 +22,38 @@ odoo.define('dependencies_graph.graph', function (require) {
         },
     };
 
+    w.get_js_services = function () {
+        var services = {};
+        _.each(window.odoo.__DEBUG__.services, function (value, key) {
+            if (typeof value === 'function' && filter(key, keywords)) {
+                services[key] = value;
+            }
+            if (typeof value === 'object') {
+                _.each(value, function (v, k) {
+                    if (typeof v === 'function') {
+                        var name = key.concat('.', k);
+                        if (filter(name, keywords)) {
+                            services[name] = v;
+                        }
+                    }
+                })
+            }
+        });
+        return services;
+    };
+
+    w.set_js_services = function () {
+        var services = w.get_js_services();
+        var module = $('#module');
+        _.each(services, function (value, key) {
+            module
+                .append($("<option></option>")
+                    .attr("value",key)
+                    .text(key));
+        });
+        module.chosen({});
+    };
+
     w.generate = function () {
         var type = $('#type').val();
         var module = $('#module').val();
@@ -67,11 +99,13 @@ odoo.define('dependencies_graph.graph', function (require) {
                 module.prop('disabled', true);
                 module.val('');
                 keywords.prop('disabled', false);
+                w.set_js_services();
                 break;
             case 'js_parents':
                 module.prop('disabled', false);
                 keywords.prop('disabled', true);
                 keywords.val('');
+                w.set_js_services();
                 break;
         }
     };
@@ -232,23 +266,7 @@ odoo.define('dependencies_graph.graph', function (require) {
         var promise = $.Deferred();
         var nodes = new vis.DataSet([]);
         var edges = new vis.DataSet([]);
-        var services = {}
-
-        _.each(window.odoo.__DEBUG__.services, function (value, key) {
-            if (typeof value === 'function' && filter(key, keywords)) {
-                services[key] = value;
-            }
-            if (typeof value === 'object') {
-                _.each(value, function (v, k) {
-                    if (typeof v === 'function') {
-                        var name = key.concat('.', k);
-                        if (filter(name, keywords)) {
-                            services[name] = v;
-                        }
-                    }
-                })
-            }
-        });
+        var services = w.get_js_services();
 
         module = module.split(" ");
         var modules = _.pairs(_.pick(services, module));
