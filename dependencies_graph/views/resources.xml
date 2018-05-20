@@ -8,7 +8,7 @@
                     <t t-call-assets="web.assets_common"/>
                     <t t-call-assets="web.assets_backend"/>
 
-										<t t-call-assets="jt_ros_scale_ops.assets_backend"/>
+                    <t t-call-assets="jt_ros_scale_ops.assets_backend"/>
 
                     <!--Vis-->
                     <script type="text/javascript" src="/dependencies_graph/static/lib/vis/vis.min.js"/>
