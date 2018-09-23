@@ -1,15 +1,9 @@
 odoo.define('dependencies_graph.graph', function (require) {
     "use strict";
 
-    var w = window['dependencies_graph'] = {};
     var session = require('web.session');
 
-    var filter = function (string, keywords) {
-        return _.every(keywords, function (k) {
-            return string.toLowerCase().includes(k.toLowerCase());
-        });
-    };
-
+    var w = window['dependencies_graph'] = {};
     var selector = '#graph';
     var options = {
         configure: {
@@ -19,22 +13,20 @@ odoo.define('dependencies_graph.graph', function (require) {
         },
         physics: {
             stabilization: false
-        },
+        }
     };
 
     w.get_js_services = function () {
         var services = {};
         _.each(window.odoo.__DEBUG__.services, function (value, key) {
-            if (typeof value === 'function' && filter(key, keywords)) {
+            if (typeof value === 'function') {
                 services[key] = value;
             }
             if (typeof value === 'object') {
                 _.each(value, function (v, k) {
                     if (typeof v === 'function') {
                         var name = key.concat('.', k);
-                        if (filter(name, keywords)) {
-                            services[name] = v;
-                        }
+                        services[name] = v;
                     }
                 })
             }
@@ -72,28 +64,17 @@ odoo.define('dependencies_graph.graph', function (require) {
         var type = $('#type').val();
         var odoo_module = $('#odoo-module').val();
         var js_services = $('#js-module').val();
-        var keywords = $('#keywords').val().split(" ");
+        var module;
 
-        if(_.contains(['module_children', 'module_parents'], type)){
-            var module = odoo_module;
+        if (_.contains(['module_parents', 'module_children'], type)) {
+            module = odoo_module;
         }
-        if(_.contains(['js_graph', 'js_parents', 'js_children'], type)){
-            var module = js_services;
+        if (_.contains(['js_parents', 'js_children'], type)) {
+            module = js_services;
         }
 
-        window.dependencies_graph[type](module, keywords).done(function (network) {
-            console.log('generated', module, keywords);
-
-            // network.on("configChange", function () {
-            //     // this will immediately fix the height of the configuration
-            //     // wrapper to prevent unecessary scrolls in chrome.
-            //     // see https://github.com/almende/vis/issues/1568
-            //     var div = $('.vis-configuration-wrapper');
-            //     var top = div.scrollTop();
-            //     _.delay(function () {
-            //         $('.vis-configuration-wrapper').scrollTop(top)
-            //     }, 0);
-            // });
+        window.dependencies_graph[type](module).done(function () {
+            console.log('generated', type, module);
         });
     };
 
@@ -101,37 +82,18 @@ odoo.define('dependencies_graph.graph', function (require) {
         var type = $('#type').val();
         var odoo_module = $('#odoo-module').parents('.form-group');
         var js_services = $('#js-module').parents('.form-group');
-        var keywords = $('#keywords').parents('.form-group');
 
         switch (type) {
+            case 'module_parents':
             case 'module_children':
                 odoo_module.show();
                 js_services.hide();
-                keywords.hide();
                 w.set_odoo_modules();
-                break;
-            case 'module_parents':
-                odoo_module.show();
-                js_services.hide();
-                keywords.hide();
-                w.set_odoo_modules();
-                break;
-            case 'module_graph':
-                odoo_module.show();
-                js_services.hide();
-                keywords.show();
-                w.set_odoo_modules();
-                break;
-            case 'js_graph':
-                odoo_module.hide();
-                js_services.hide();
-                keywords.show();
                 break;
             case 'js_parents':
             case 'js_children':
                 odoo_module.hide();
                 js_services.show();
-                keywords.hide();
                 w.set_js_services();
                 break;
         }
@@ -139,7 +101,7 @@ odoo.define('dependencies_graph.graph', function (require) {
 
     $(w.type_changed);
 
-    w.module_children = function (module, keywords) {
+    w.module_children = function (module) {
         var promise = $.Deferred();
         session.rpc('/dependencies_graph/modules').done(function (result) {
             var deps = JSON.parse(result);

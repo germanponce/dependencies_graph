@@ -32,10 +32,9 @@
                                     <div class="col-sm-10">
                                         <select id="type" class="form-control"
                                                 onchange="window.dependencies_graph.type_changed()">
-                                            <option value="module_children">Odoo Module Children</option>
                                             <option value="module_parents">Odoo Module Parents</option>
-                                            <!--<option value="module_graph">Odoo Module Graph</option>-->
-                                            <option value="js_graph">JavaScript graph</option>
+                                            <option value="module_children">Odoo Module Children</option>
+
                                             <option value="js_parents">JavaScript Parents</option>
                                             <option value="js_children">JavaScript Children</option>
                                         </select>
@@ -45,21 +44,14 @@
                                     <label for="js-module" class="col-sm-2 control-label">Js Services</label>
                                     <div class="col-sm-10">
                                         <select type="text" class="form-control" id="js-module"
-                                               placeholder="Module" multiple=""></select>
+                                                placeholder="Module" multiple=""/>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="odoo-module" class="col-sm-2 control-label">Odoo Module</label>
                                     <div class="col-sm-10">
                                         <select type="text" class="form-control" id="odoo-module"
-                                                placeholder="Module"></select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="keywords" class="col-sm-2 control-label">Keywords</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="keywords"
-                                               placeholder="Keywords"></input>
+                                                placeholder="Module"/>
                                     </div>
                                 </div>
                             </div>
@@ -74,7 +66,7 @@
                             </div>
 
                         </div>
-                        <div id="graph" class="col-md-8"></div>
+                        <div id="graph" class="col-md-8"/>
                     </div>
                 </body>
             </html>
