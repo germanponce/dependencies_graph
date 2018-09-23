@@ -56,7 +56,7 @@ odoo.define('dependencies_graph.graph', function (require) {
 
     w.set_odoo_modules = function () {
         var module = $('#odoo-module');
-        session.rpc('/dependencies_graph/*').done(function (result) {
+        session.rpc('/dependencies_graph/modules').done(function (result) {
             var deps = JSON.parse(result);
             _.each(deps, function (value, key) {
                 module
@@ -141,7 +141,7 @@ odoo.define('dependencies_graph.graph', function (require) {
 
     w.module_children = function (module, keywords) {
         var promise = $.Deferred();
-        session.rpc('/dependencies_graph/' + module).done(function (result) {
+        session.rpc('/dependencies_graph/modules').done(function (result) {
             var deps = JSON.parse(result);
             var nodes = new vis.DataSet([]);
             var edges = new vis.DataSet([]);
@@ -179,7 +179,7 @@ odoo.define('dependencies_graph.graph', function (require) {
 
     w.module_parents = function (module, keywords) {
         var promise = $.Deferred();
-        session.rpc('/dependencies_graph/' + module).done(function (result) {
+        session.rpc('/dependencies_graph/modules').done(function (result) {
             var deps = JSON.parse(result);
             var nodes = new vis.DataSet([]);
             var edges = new vis.DataSet([]);
@@ -215,7 +215,7 @@ odoo.define('dependencies_graph.graph', function (require) {
 
     w.module_graph = function (module, keywords) {
         var promise = $.Deferred();
-        session.rpc('/dependencies_graph/' + module).done(function (result) {
+        session.rpc('/dependencies_graph/modules').done(function (result) {
             var deps = JSON.parse(result);
             var nodes = new vis.DataSet([]);
             var edges = new vis.DataSet([]);
