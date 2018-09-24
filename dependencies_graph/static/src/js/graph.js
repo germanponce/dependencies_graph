@@ -40,7 +40,7 @@ odoo.define('dependencies_graph.graph', function (require) {
         _.each(services, function (value, key) {
             module
                 .append($("<option></option>")
-                    .attr("value",key)
+                    .attr("value", key)
                     .text(key));
         });
         module.chosen({search_contains: true});
@@ -53,7 +53,7 @@ odoo.define('dependencies_graph.graph', function (require) {
             _.each(deps, function (value, key) {
                 module
                     .append($("<option></option>")
-                        .attr("value",key)
+                        .attr("value", key)
                         .text(key));
             });
             module.chosen({search_contains: true});
@@ -64,6 +64,7 @@ odoo.define('dependencies_graph.graph', function (require) {
         var type = $('#type').val();
         var odoo_module = $('#odoo-module').val();
         var js_services = $('#js-module').val();
+        var acyclic_graph = $('#acyclic-graph:checked').length === 1;
         var module;
 
         if (_.contains(['module_parents', 'module_children'], type)) {
@@ -73,7 +74,7 @@ odoo.define('dependencies_graph.graph', function (require) {
             module = js_services;
         }
 
-        window.dependencies_graph[type](module).done(function () {
+        window.dependencies_graph[type](module, acyclic_graph).done(function () {
             console.log('generated', type, module);
         });
     };
@@ -82,18 +83,21 @@ odoo.define('dependencies_graph.graph', function (require) {
         var type = $('#type').val();
         var odoo_module = $('#odoo-module').parents('.form-group');
         var js_services = $('#js-module').parents('.form-group');
+        var acyclic_graph = $('#acyclic-graph').parents('.form-group');
 
         switch (type) {
             case 'module_parents':
             case 'module_children':
                 odoo_module.show();
                 js_services.hide();
+                acyclic_graph.show();
                 w.set_odoo_modules();
                 break;
             case 'js_parents':
             case 'js_children':
                 odoo_module.hide();
                 js_services.show();
+                acyclic_graph.hide();
                 w.set_js_services();
                 break;
         }
@@ -101,7 +105,7 @@ odoo.define('dependencies_graph.graph', function (require) {
 
     $(w.type_changed);
 
-    w.module_children = function (module) {
+    w.module_children = function (module, acyclic_graph) {
         var promise = $.Deferred();
         session.rpc('/dependencies_graph/modules').done(function (result) {
             var deps = JSON.parse(result);
@@ -112,13 +116,13 @@ odoo.define('dependencies_graph.graph', function (require) {
             while (modules.length > 0) {
                 var m = modules.shift();
                 var children = _.filter(_.keys(deps), function (k) {
-                    return _.contains(deps[k], m);
+                    return _.contains(deps[k]['depends'], m);
                 });
                 modules = _.union(modules, children);
 
                 nodes.update({id: m, label: m});
                 _.each(children, function (child) {
-                    if (!nodes.get(child)) {
+                    if (!(acyclic_graph && nodes.get(child))) {
                         nodes.update({id: child, label: child});
                         edges.update({from: m, to: child, arrows: 'to'})
                     }
@@ -139,7 +143,7 @@ odoo.define('dependencies_graph.graph', function (require) {
         return promise;
     };
 
-    w.module_parents = function (module, keywords) {
+    w.module_parents = function (module, acyclic_graph) {
         var promise = $.Deferred();
         session.rpc('/dependencies_graph/modules').done(function (result) {
             var deps = JSON.parse(result);
@@ -149,12 +153,12 @@ odoo.define('dependencies_graph.graph', function (require) {
             var modules = [module];
             while (modules.length > 0) {
                 var m = modules.shift();
-                var parents = deps[m];
+                var parents = deps[m]['depends'];
                 modules = _.union(modules, parents);
 
                 nodes.update({id: m, label: m});
                 _.each(parents, function (p) {
-                    if (!nodes.get(p)) {
+                    if (!(acyclic_graph && nodes.get(p))) {
                         nodes.update({id: p, label: p});
                         edges.update({from: p, to: m, arrows: 'to'})
                     }
@@ -175,7 +179,7 @@ odoo.define('dependencies_graph.graph', function (require) {
         return promise;
     };
 
-    w.js_parents = function (module) {
+    w.js_parents = function (module, acyclic_graph) {
         var promise = $.Deferred();
         var nodes = new vis.DataSet([]);
         var edges = new vis.DataSet([]);
@@ -183,21 +187,21 @@ odoo.define('dependencies_graph.graph', function (require) {
 
         var modules = _.pairs(_.pick(services, module));
 
-        while(modules.length > 0){
+        while (modules.length > 0) {
             var m = modules.pop()
             var x = m[0];
             var x_value = m[1];
             nodes.update({id: x, label: x});
             _.each(services, function (y_value, y) {
-                if (x_value.prototype && x_value.prototype.__proto__.constructor === y_value) {                    
+                if (x_value.prototype && x_value.prototype.__proto__.constructor === y_value) {
                     nodes.update({id: y, label: y});
-                    edges.add({from: y, to: x, arrows: 'to'})
+                    edges.add({from: y, to: x, arrows: 'to'});
 
                     modules.push([y, y_value]);
                 }
             })
 
-        };
+        }
 
         // create a network
         var container = $(selector)[0];
@@ -212,7 +216,7 @@ odoo.define('dependencies_graph.graph', function (require) {
         return promise;
     };
 
-    w.js_children = function (module) {
+    w.js_children = function (module, acyclic_graph) {
         var promise = $.Deferred();
         var nodes = new vis.DataSet([]);
         var edges = new vis.DataSet([]);
@@ -220,7 +224,7 @@ odoo.define('dependencies_graph.graph', function (require) {
 
         var modules = _.pairs(_.pick(services, module));
 
-        while(modules.length > 0){
+        while (modules.length > 0) {
             var m = modules.pop()
             var x = m[0];
             var x_value = m[1];
@@ -234,7 +238,7 @@ odoo.define('dependencies_graph.graph', function (require) {
                 }
             })
 
-        };
+        }
 
         // create a network
         var container = $(selector)[0];
