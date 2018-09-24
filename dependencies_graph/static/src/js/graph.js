@@ -179,7 +179,7 @@ odoo.define('dependencies_graph.graph', function (require) {
         return promise;
     };
 
-    w.js_parents = function (module, acyclic_graph) {
+    w.js_graph = function (module, dependencies) {
         var promise = $.Deferred();
         var nodes = new vis.DataSet([]);
         var edges = new vis.DataSet([]);
@@ -193,14 +193,22 @@ odoo.define('dependencies_graph.graph', function (require) {
             var x_value = m[1];
             nodes.update({id: x, label: x});
             _.each(services, function (y_value, y) {
-                if (x_value.prototype && x_value.prototype.__proto__.constructor === y_value) {
-                    nodes.update({id: y, label: y});
-                    edges.add({from: y, to: x, arrows: 'to'});
+                if (dependencies) { // parents
+                    if (x_value.prototype && Object.getPrototypeOf(x_value.prototype).constructor === y_value) {
+                        nodes.update({id: y, label: y});
+                        edges.add({from: y, to: x, arrows: 'to'});
 
-                    modules.push([y, y_value]);
+                        modules.push([y, y_value]);
+                    }
+                } else {
+                    if (y_value.prototype && Object.getPrototypeOf(y_value.prototype).constructor === x_value) {
+                        nodes.update({id: y, label: y});
+                        edges.add({from: x, to: y, arrows: 'to'});
+
+                        modules.push([y, y_value]);
+                    }
                 }
-            })
-
+            });
         }
 
         // create a network
@@ -216,40 +224,11 @@ odoo.define('dependencies_graph.graph', function (require) {
         return promise;
     };
 
+    w.js_parents = function (module, acyclic_graph) {
+        return w.js_graph(module, true);
+    };
+
     w.js_children = function (module, acyclic_graph) {
-        var promise = $.Deferred();
-        var nodes = new vis.DataSet([]);
-        var edges = new vis.DataSet([]);
-        var services = w.get_js_services();
-
-        var modules = _.pairs(_.pick(services, module));
-
-        while (modules.length > 0) {
-            var m = modules.pop()
-            var x = m[0];
-            var x_value = m[1];
-            nodes.update({id: x, label: x});
-            _.each(services, function (y_value, y) {
-                if (y_value.prototype && y_value.prototype.__proto__.constructor === x_value) {
-                    nodes.update({id: y, label: y});
-                    edges.add({from: x, to: y, arrows: 'to'})
-
-                    modules.push([y, y_value]);
-                }
-            })
-
-        }
-
-        // create a network
-        var container = $(selector)[0];
-        var data = {
-            nodes: nodes,
-            edges: edges
-        };
-        options['configure']['container'] = $('#settings')[0];
-        var network = new vis.Network(container, data, options);
-
-        promise.resolve(network);
-        return promise;
+        return w.js_graph(module, false);
     };
 });
