@@ -104,6 +104,13 @@ odoo.define('dependencies_graph.graph', function (require) {
 
     $(w.type_changed);
 
+    w.load_assets = function () {
+        var modules = $('select#js-assets').val();
+        session.rpc('/dependencies_graph/js_assets', {modules: modules}).done(function (result) {
+            var scripts = JSON.parse(result)['scripts'];
+        })
+    };
+
     w.module_children = function (module, acyclic_graph) {
         var promise = $.Deferred();
         session.rpc('/dependencies_graph/modules').done(function (result) {
