@@ -46,9 +46,9 @@ odoo.define('dependencies_graph.graph', function (require) {
         module.chosen({search_contains: true});
     };
 
-    w.set_odoo_modules = function () {
-        var module = $('#odoo-module');
-        session.rpc('/dependencies_graph/modules').done(function (result) {
+    w.set_odoo_modules = function (selector) {
+        var module = selector ? $(selector) : $('#odoo-module');
+        return session.rpc('/dependencies_graph/modules').done(function (result) {
             var deps = JSON.parse(result);
             _.each(deps, function (value, key) {
                 module
@@ -81,23 +81,22 @@ odoo.define('dependencies_graph.graph', function (require) {
 
     w.type_changed = function () {
         var type = $('#type').val();
-        var odoo_module = $('#odoo-module').parents('.form-group');
-        var js_services = $('#js-module').parents('.form-group');
-        var acyclic_graph = $('#acyclic-graph').parents('.form-group');
+        var odoo_module_options = $('#odoo-module-options');
+        var js_service_options = $('#js-service-options');
 
         switch (type) {
             case 'module_parents':
             case 'module_children':
-                odoo_module.show();
-                js_services.hide();
-                acyclic_graph.show();
+                odoo_module_options.show();
+                js_service_options.hide();
                 w.set_odoo_modules();
                 break;
             case 'js_parents':
             case 'js_children':
-                odoo_module.hide();
-                js_services.show();
-                acyclic_graph.hide();
+                odoo_module_options.hide();
+                js_service_options.show();
+
+                w.set_odoo_modules('#js-assets');
                 w.set_js_services();
                 break;
         }
