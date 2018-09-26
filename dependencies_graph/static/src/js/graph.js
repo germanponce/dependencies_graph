@@ -149,10 +149,20 @@ odoo.define('dependencies_graph.graph', function (require) {
                 });
                 modules = _.union(modules, children);
 
-                nodes.update({id: m, label: m, title: w.generate_module_tooltip(deps[m])});
+                nodes.update({
+                    id: m,
+                    label: m,
+                    color: deps[m]['state'] === 'installed' ? '#97c2fc' : '#ff797f',
+                    title: w.generate_module_tooltip(deps[m])
+                });
                 _.each(children, function (child) {
                     if (!(acyclic_graph && nodes.get(child))) {
-                        nodes.update({id: child, label: child, title: w.generate_module_tooltip(deps[child])});
+                        nodes.update({
+                            id: child,
+                            label: child,
+                            color: deps[child]['state'] === 'installed' ? '#97c2fc' : '#ff797f',
+                            title: w.generate_module_tooltip(deps[child])
+                        });
                         edges.update({from: m, to: child, arrows: 'to'})
                     }
                 })
@@ -185,10 +195,20 @@ odoo.define('dependencies_graph.graph', function (require) {
                 var parents = deps[m]['depends'];
                 modules = _.union(modules, parents);
 
-                nodes.update({id: m, label: m, title: w.generate_module_tooltip(deps[m])});
+                nodes.update({
+                    id: m,
+                    label: m,
+                    color: deps[m]['state'] === 'installed' ? '#97c2fc' : '#ff797f',
+                    title: w.generate_module_tooltip(deps[m])
+                });
                 _.each(parents, function (p) {
                     if (!(acyclic_graph && nodes.get(p))) {
-                        nodes.update({id: p, label: p, title: w.generate_module_tooltip(deps[p])});
+                        nodes.update({
+                            id: p,
+                            label: p,
+                            color: deps[p]['state'] === 'installed' ? '#97c2fc' : '#ff797f',
+                            title: w.generate_module_tooltip(deps[p])
+                        });
                         edges.update({from: p, to: m, arrows: 'to'})
                     }
                 })
