@@ -93,13 +93,39 @@
             </html>
         </template>
 
-        <record model="ir.actions.act_url" id="action_dependencies_graph">
+        <record id="basic_settings" model="dependencies_graph.settings"/>
+
+        <record id="action_dependencies_graph" model="ir.actions.act_url">
             <field name="name">Dependencies Graph</field>
             <field name="url">/dependencies_graph/graph?debug=assets</field>
             <field name="type">ir.actions.act_url</field>
             <field name="target">self</field>
         </record>
+
+        <record id="dependencies_graph_settings_form" model="ir.ui.view">
+            <field name="name">Setting</field>
+            <field name="model">dependencies_graph.settings</field>
+            <field name="arch" type="xml">
+                <form string="Settings" class="oe_form_configuration">
+                    <header>
+                        <button type="action" name="%(action_dependencies_graph)d" string="Launch"/>
+                    </header>
+                    <group>
+                        <field name="module_ids" widget="many2many_tags" string="Load additional assets from"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_settings" model="ir.actions.act_window">
+            <field name="name">Settings Action</field>
+            <field name="res_model">dependencies_graph.settings</field>
+            <field name="view_mode">form</field>
+            <field name="res_id" ref="basic_settings"/>
+        </record>
+
         <menuitem id="menu_dependencies_graph" name="Dependencies Graph" sequence="500"
-                  action="action_dependencies_graph" web_icon="dependencies_graph,static/description/icon.png"/>
+                  action="action_settings" web_icon="dependencies_graph,static/description/icon.png"/>
+
     </data>
 </odoo>
