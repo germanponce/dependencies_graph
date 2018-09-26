@@ -99,7 +99,7 @@
             <field name="type">ir.actions.act_url</field>
             <field name="target">self</field>
         </record>
-        <menuitem id="menu_dependencies_graph" name="Dependencies Graph" sequence="10"
+        <menuitem id="menu_dependencies_graph" name="Dependencies Graph" sequence="500"
                   action="action_dependencies_graph" web_icon="dependencies_graph,static/description/icon.png"/>
     </data>
 </odoo>

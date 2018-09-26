@@ -43,7 +43,8 @@ class DependenciesGraph(http.Controller):
         for (view,) in views:
             root = ET.fromstring(view)
             for script in root.iter('script'):
-                scripts.append(script.attrib['src'])
+                if 'src' in script.attrib:
+                    scripts.append(script.attrib['src'])
 
         return json.dumps({
             'scripts': scripts

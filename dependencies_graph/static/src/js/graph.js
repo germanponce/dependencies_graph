@@ -4,6 +4,11 @@ odoo.define('dependencies_graph.graph', function (require) {
     var session = require('web.session');
 
     var w = window['dependencies_graph'] = {};
+    w.js_loaded = [
+        '/web/static/src/js/services/session.js',
+        '/web/static/src/js/framework/session.js'
+    ];
+    
     var selector = '#graph';
     var options = {
         configure: {
@@ -37,6 +42,9 @@ odoo.define('dependencies_graph.graph', function (require) {
     w.set_js_services = function () {
         var services = w.get_js_services();
         var module = $('#js-module');
+        module.empty();
+        module.chosen("destroy");
+
         _.each(services, function (value, key) {
             module
                 .append($("<option></option>")
@@ -105,10 +113,25 @@ odoo.define('dependencies_graph.graph', function (require) {
     $(w.type_changed);
 
     w.load_assets = function () {
+        var promise = $.Deferred();
         var modules = $('select#js-assets').val();
         session.rpc('/dependencies_graph/js_assets', {modules: modules}).done(function (result) {
             var scripts = JSON.parse(result)['scripts'];
-        })
+            // don't reload JS files already loaded
+            scripts = _.difference(scripts, w.js_loaded);
+
+            var promises = _.map(scripts, function (script) {
+                return $.getScript(script)
+            });
+            $.when.apply($, promises).always(function () {
+                // mark JS files as loaded
+                w.js_loaded = _.union(w.js_loaded, scripts);
+
+                w.set_js_services();
+                promise.resolve();
+            })
+        });
+        return promise;
     };
 
     w.module_children = function (module, acyclic_graph) {
