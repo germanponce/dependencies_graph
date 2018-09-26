@@ -149,10 +149,10 @@ odoo.define('dependencies_graph.graph', function (require) {
                 });
                 modules = _.union(modules, children);
 
-                nodes.update({id: m, label: m});
+                nodes.update({id: m, label: m, title: w.generate_module_tooltip(deps[m])});
                 _.each(children, function (child) {
                     if (!(acyclic_graph && nodes.get(child))) {
-                        nodes.update({id: child, label: child});
+                        nodes.update({id: child, label: child, title: w.generate_module_tooltip(deps[child])});
                         edges.update({from: m, to: child, arrows: 'to'})
                     }
                 })
@@ -185,10 +185,10 @@ odoo.define('dependencies_graph.graph', function (require) {
                 var parents = deps[m]['depends'];
                 modules = _.union(modules, parents);
 
-                nodes.update({id: m, label: m});
+                nodes.update({id: m, label: m, title: w.generate_module_tooltip(deps[m])});
                 _.each(parents, function (p) {
                     if (!(acyclic_graph && nodes.get(p))) {
-                        nodes.update({id: p, label: p});
+                        nodes.update({id: p, label: p, title: w.generate_module_tooltip(deps[p])});
                         edges.update({from: p, to: m, arrows: 'to'})
                     }
                 })
@@ -279,5 +279,13 @@ odoo.define('dependencies_graph.graph', function (require) {
             }
         });
         return e[0];
-    }
+    };
+
+    w.generate_module_tooltip = function (node) {
+        var e = '<dl class="dl-horizontal">' +
+            '<dt>name:</dt><dd>' + node['name'] + '</dd>' +
+            '<dt>state:</dt><dd>' + node['state'] + '</dd>' +
+            '</dl>';
+        return e;
+    };
 });
