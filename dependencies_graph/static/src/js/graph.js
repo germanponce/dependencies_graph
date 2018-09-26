@@ -220,18 +220,18 @@ odoo.define('dependencies_graph.graph', function (require) {
             var m = modules.pop()
             var x = m[0];
             var x_value = m[1];
-            nodes.update({id: x, label: x});
+            nodes.update({id: x, label: x, title: w.generate_js_tooltip(x_value)});
             _.each(services, function (y_value, y) {
                 if (dependencies) { // parents
                     if (x_value.prototype && Object.getPrototypeOf(x_value.prototype).constructor === y_value) {
-                        nodes.update({id: y, label: y});
+                        nodes.update({id: y, label: y, title: w.generate_js_tooltip(y_value)});
                         edges.add({from: y, to: x, arrows: 'to'});
 
                         modules.push([y, y_value]);
                     }
                 } else {
                     if (y_value.prototype && Object.getPrototypeOf(y_value.prototype).constructor === x_value) {
-                        nodes.update({id: y, label: y});
+                        nodes.update({id: y, label: y, title: w.generate_js_tooltip(y_value)});
                         edges.add({from: x, to: y, arrows: 'to'});
 
                         modules.push([y, y_value]);
@@ -260,4 +260,24 @@ odoo.define('dependencies_graph.graph', function (require) {
     w.js_children = function (module, acyclic_graph) {
         return w.js_graph(module, false);
     };
+
+    w.generate_js_tooltip = function (f) {
+        var e = $('<dl class="dl-horizontal"></dl>');
+        _.each(f.prototype, function (value, key) {
+            e.append($('<dt>' + key + ':</dt>'));
+
+            if (_.isFunction(value)) {
+                var str = value.toString();
+                str = str.substr(0, str.indexOf(')') + 1);
+                e.append($('<dd>' + str + '</dd>'))
+            }
+            else if (_.isObject(value)) {
+                delete value['_super'];
+                e.append($('<dd>' + JSON.stringify(value) + '</dd>'))
+            } else {
+                e.append($('<dd>' + value + '</dd>'))
+            }
+        });
+        return e[0];
+    }
 });
