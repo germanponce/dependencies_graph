@@ -103,6 +103,11 @@ odoo.define('dependencies_graph.graph', function (require) {
     };
 
     $(w.type_changed);
+    $(function () {
+        session.rpc('/dependencies_graph/models').done(function (result) {
+            w.models = JSON.parse(result);
+        });
+    });
 
     w.module_children = function (module, acyclic_graph) {
         var promise = $.Deferred();

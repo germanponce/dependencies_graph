@@ -47,3 +47,34 @@ class DependenciesGraph(http.Controller):
             response[key]['state'] = value.state
 
         return json.dumps(response)
+
+    @http.route('/dependencies_graph/models', type='json', auth='user')
+    def get_models(self):
+        cr = http.request.cr
+
+        cr.execute("""SELECT model, model_id, name, field_description, ttype, relation, 
+                                    relation_field, readonly, required,
+                                    relation_table, column1, column2
+                      FROM ir_model_fields""")
+        models = cr.fetchall()
+        response = {}
+        for model in models:
+            model_name, model_id, name, field_description, ttype, relation, relation_field, readonly, required, relation_table, column1, column2 = model
+            if not model_name in response:
+                response[model_name] = {}
+            response[model_name][name] = {
+                'model_name': model_name,
+                'model_id': model_id,
+                'name': name,
+                'field_description': field_description,
+                'ttype': ttype,
+                'relation': relation,
+                'relation_field': relation_field,
+                'readonly': readonly,
+                'required': required,
+                'relation_table': relation_field,
+                'column1': column1,
+                'column2': column2
+            }
+
+        return json.dumps(response)
