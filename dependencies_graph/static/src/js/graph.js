@@ -38,8 +38,6 @@ odoo.define('dependencies_graph.graph', function (require) {
     w.set_js_services = function () {
         var services = w.get_js_services();
         var module = $('#js-module');
-        module.empty();
-        module.chosen("destroy");
 
         _.each(services, function (value, key) {
             module
@@ -50,8 +48,8 @@ odoo.define('dependencies_graph.graph', function (require) {
         module.chosen({search_contains: true});
     };
 
-    w.set_odoo_modules = function (selector) {
-        var module = selector ? $(selector) : $('#odoo-module');
+    w.set_odoo_modules = function () {
+        var module = $('#odoo-module');
         return session.rpc('/dependencies_graph/modules').done(function (result) {
             var deps = JSON.parse(result);
             _.each(deps, function (value, key) {
@@ -146,6 +144,7 @@ odoo.define('dependencies_graph.graph', function (require) {
                 nodes: nodes,
                 edges: edges
             };
+            $('#settings').empty();
             options['configure']['container'] = $('#settings')[0];
             var network = new vis.Network(container, data, options);
 
@@ -192,6 +191,7 @@ odoo.define('dependencies_graph.graph', function (require) {
                 nodes: nodes,
                 edges: edges
             };
+            $('#settings').empty();
             options['configure']['container'] = $('#settings')[0];
             var network = new vis.Network(container, data, options);
 
@@ -238,6 +238,7 @@ odoo.define('dependencies_graph.graph', function (require) {
             nodes: nodes,
             edges: edges
         };
+        $('#settings').empty();
         options['configure']['container'] = $('#settings')[0];
         var network = new vis.Network(container, data, options);
 
