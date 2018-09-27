@@ -227,8 +227,48 @@ odoo.define('dependencies_graph.graph', function (require) {
         return promise;
     };
 
-    w.models_graph = function (module, acyclic_graph) {
-        console.log(module, acyclic_graph);
+    w.models_graph = function (models, acyclic_graph) {
+        var nodes = new vis.DataSet([]);
+        var edges = new vis.DataSet([]);
+        var processed = [];
+        var depth = parseInt($('#odoo-model-depth').val());
+
+        var level = [models];
+        for (var i = 0; i < depth; i++) {
+            level.push([]);
+            while (level[i].length > 0) {
+                var model = level[i].shift();
+                processed.push(model);
+                var relations = _.filter(w.models[model], function (v, k) {
+                    return _.contains(['one2many', 'many2one', 'many2many'], v['ttype']);
+                });
+                level[i + 1] = _.union(level[i + 1], _.difference(_.map(relations, r => r['relation']), processed));
+
+                nodes.update({
+                    id: model,
+                    label: model
+                });
+                _.each(relations, function (rel) {
+                    nodes.update({
+                        id: rel['relation'],
+                        label: rel['relation']
+                    });
+                    edges.update({from: model, to: rel['relation'], arrows: 'to'})
+                });
+            }
+        }
+
+        // create a network
+        var container = $(selector)[0];
+        var data = {
+            nodes: nodes,
+            edges: edges
+        };
+        $('#settings').empty();
+        options['configure']['container'] = $('#settings')[0];
+        var network = new vis.Network(container, data, options);
+
+        return $.Deferred().resolve(network);
     };
 
     w.js_graph = function (module, dependencies) {
