@@ -63,7 +63,7 @@ odoo.define('dependencies_graph.graph', function (require) {
     };
 
     w.set_models = function () {
-        var module = $('#odoo-model');
+        var module = $('#odoo-model,#odoo-model-ignore');
         session.rpc('/dependencies_graph/models').done(function (result) {
             w.models = JSON.parse(result);
             _.each(w.models, function (value, key) {
@@ -230,7 +230,8 @@ odoo.define('dependencies_graph.graph', function (require) {
     w.models_graph = function (models, acyclic_graph) {
         var nodes = new vis.DataSet([]);
         var edges = new vis.DataSet([]);
-        var processed = [];
+        var ignore = $('#odoo-model-ignore').val();
+        var processed = ignore.slice(); // copy
         var depth = parseInt($('#odoo-model-depth').val());
 
         var level = [models];
@@ -240,7 +241,8 @@ odoo.define('dependencies_graph.graph', function (require) {
                 var model = level[i].shift();
                 processed.push(model);
                 var relations = _.filter(w.models[model], function (v, k) {
-                    return _.contains(['one2many', 'many2one', 'many2many'], v['ttype']);
+                    return _.contains(['one2many', 'many2one', 'many2many'], v['ttype'])
+                        && !_.contains(ignore, v['relation']);
                 });
                 level[i + 1] = _.union(level[i + 1], _.difference(_.map(relations, r => r['relation']), processed));
 
@@ -253,7 +255,7 @@ odoo.define('dependencies_graph.graph', function (require) {
                         id: rel['relation'],
                         label: rel['relation']
                     });
-                    edges.update({from: model, to: rel['relation'], arrows: 'to'})
+                    edges.update({from: model, to: rel['relation'], arrows: 'to', title: 'pepe'})
                 });
             }
         }
