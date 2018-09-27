@@ -19,6 +19,11 @@
 
                     <script type="text/javascript" src="/dependencies_graph/static/src/js/graph.js"/>
                     <link rel="stylesheet" href="/dependencies_graph/static/src/css/graph.css"/>
+
+                    <!--External JS assets-->
+                    <t t-foreach="scripts" t-as="script">
+                        <script type="text/javascript" t-att-src="script"/>
+                    </t>
                 </head>
                 <body>
                     <div class="row">
