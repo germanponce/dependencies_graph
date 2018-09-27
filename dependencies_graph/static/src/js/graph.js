@@ -260,7 +260,8 @@ odoo.define('dependencies_graph.graph', function (require) {
                     edges.update({
                         from: model,
                         to: rel['relation'],
-                        arrows: 'to',
+                        arrows: rel['ttype'] === 'many2one' ? 'to' :
+                            (rel['ttype'] === 'one2many' ? 'from' : 'from,to'),
                         title: w.generate_model_edge_tooltip(rel)
                     })
                 });
@@ -364,6 +365,7 @@ odoo.define('dependencies_graph.graph', function (require) {
 
     w.generate_model_edge_tooltip = function (rel) {
         var e = '<dl class="dl-horizontal">' +
+            '<dt>model name (self):</dt><dd>' + rel['model_name'] + '</dd>' +
             '<dt>field name:</dt><dd>' + rel['name'] + '</dd>' +
             '<dt>field description:</dt><dd>' + rel['field_description'] + '</dd>' +
             '<dt>type:</dt><dd>' + rel['ttype'] + '</dd>' +
