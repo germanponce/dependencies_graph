@@ -80,11 +80,15 @@ odoo.define('dependencies_graph.graph', function (require) {
         var type = $('#type').val();
         var odoo_module = $('#odoo-module').val();
         var js_services = $('#js-module').val();
+        var odoo_model = $('#odoo-model').val();
         var acyclic_graph = $('#acyclic-graph:checked').length === 1;
         var module;
 
         if (_.contains(['module_parents', 'module_children'], type)) {
             module = odoo_module;
+        }
+        if (_.contains(['models_graph'], type)) {
+            module = odoo_model;
         }
         if (_.contains(['js_parents', 'js_children'], type)) {
             module = js_services;
@@ -109,7 +113,7 @@ odoo.define('dependencies_graph.graph', function (require) {
                 odoo_model_options.hide();
                 w.set_odoo_modules();
                 break;
-            case 'models':
+            case 'models_graph':
                 odoo_module_options.hide();
                 js_service_options.hide();
                 odoo_model_options.show();
@@ -221,6 +225,10 @@ odoo.define('dependencies_graph.graph', function (require) {
             promise.resolve(network);
         });
         return promise;
+    };
+
+    w.models_graph = function (module, acyclic_graph) {
+        console.log(module, acyclic_graph);
     };
 
     w.js_graph = function (module, dependencies) {

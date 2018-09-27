@@ -43,7 +43,7 @@
                                             </optgroup>
 
                                             <optgroup label="Odoo models">
-                                                <option value="models">Odoo Models Relationship</option>
+                                                <option value="models_graph">Odoo Models Relationship</option>
                                             </optgroup>
 
                                             <optgroup label="JS assets">
