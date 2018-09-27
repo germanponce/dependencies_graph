@@ -9,11 +9,11 @@ odoo.define('dependencies_graph.graph', function (require) {
     var options = {
         configure: {
             enabled: true,
-            filter: 'layout',
+            // filter: 'layout',
             showButton: true
         },
         physics: {
-            stabilization: false
+            enabled: false
         }
     };
 
@@ -234,7 +234,7 @@ odoo.define('dependencies_graph.graph', function (require) {
         var processed = ignore.slice(); // copy
         var depth = parseInt($('#odoo-model-depth').val() || 1);
 
-        var level = [models];
+        var level = [models || []];
         for (var i = 0; i < depth; i++) {
             level.push([]);
             while (level[i].length > 0) {

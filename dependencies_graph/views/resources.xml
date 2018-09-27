@@ -97,7 +97,7 @@
                                     <div class="form-group">
                                         <label for="odoo-model-depth" class="col-sm-2 control-label">Depth</label>
                                         <div class="col-sm-10">
-                                            <input type="number" class="form-control" id="odoo-model-depth"/>
+                                            <input type="number" class="form-control" id="odoo-model-depth" value="1"/>
                                         </div>
                                     </div>
                                 </div>
