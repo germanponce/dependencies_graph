@@ -62,6 +62,20 @@ odoo.define('dependencies_graph.graph', function (require) {
         });
     };
 
+    w.set_models = function () {
+        var module = $('#odoo-model');
+        session.rpc('/dependencies_graph/models').done(function (result) {
+            w.models = JSON.parse(result);
+            _.each(w.models, function (value, key) {
+                module
+                    .append($("<option></option>")
+                        .attr("value", key)
+                        .text(key));
+            });
+            module.chosen({search_contains: true});
+        });
+    };
+
     w.generate = function () {
         var type = $('#type').val();
         var odoo_module = $('#odoo-module').val();
@@ -85,29 +99,33 @@ odoo.define('dependencies_graph.graph', function (require) {
         var type = $('#type').val();
         var odoo_module_options = $('#odoo-module-options');
         var js_service_options = $('#js-service-options');
+        var odoo_model_options = $('#odoo-model-options');
 
         switch (type) {
             case 'module_parents':
             case 'module_children':
                 odoo_module_options.show();
                 js_service_options.hide();
+                odoo_model_options.hide();
                 w.set_odoo_modules();
+                break;
+            case 'models':
+                odoo_module_options.hide();
+                js_service_options.hide();
+                odoo_model_options.show();
+                w.set_models();
                 break;
             case 'js_parents':
             case 'js_children':
                 odoo_module_options.hide();
                 js_service_options.show();
+                odoo_model_options.hide();
                 w.set_js_services();
                 break;
         }
     };
 
     $(w.type_changed);
-    $(function () {
-        session.rpc('/dependencies_graph/models').done(function (result) {
-            w.models = JSON.parse(result);
-        });
-    });
 
     w.module_children = function (module, acyclic_graph) {
         var promise = $.Deferred();

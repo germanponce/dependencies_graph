@@ -37,11 +37,19 @@
                                     <div class="col-sm-10">
                                         <select id="type" class="form-control"
                                                 onchange="window.dependencies_graph.type_changed()">
-                                            <option value="module_parents">Odoo Module Parents</option>
-                                            <option value="module_children">Odoo Module Children</option>
+                                            <optgroup label="Odoo modules">
+                                                <option value="module_parents">Odoo Module Parents</option>
+                                                <option value="module_children">Odoo Module Children</option>
+                                            </optgroup>
 
-                                            <option value="js_parents">JavaScript Parents</option>
-                                            <option value="js_children">JavaScript Children</option>
+                                            <optgroup label="Odoo models">
+                                                <option value="models">Odoo Models Relationship</option>
+                                            </optgroup>
+
+                                            <optgroup label="JS assets">
+                                                <option value="js_parents">JavaScript Parents</option>
+                                                <option value="js_children">JavaScript Children</option>
+                                            </optgroup>
                                         </select>
                                     </div>
                                 </div>
@@ -68,6 +76,15 @@
                                         <label for="js-module" class="col-sm-2 control-label">Js Services</label>
                                         <div class="col-sm-10">
                                             <select type="text" class="form-control" id="js-module" multiple=""/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="odoo-model-options">
+                                    <div class="form-group">
+                                        <label for="odoo-model" class="col-sm-2 control-label">Models</label>
+                                        <div class="col-sm-10">
+                                            <select type="text" class="form-control" id="odoo-model" multiple=""/>
                                         </div>
                                     </div>
                                 </div>
