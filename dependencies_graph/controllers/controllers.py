@@ -46,23 +46,3 @@ class DependenciesGraph(http.Controller):
             response[key]['state'] = value.state
 
         return json.dumps(response)
-
-    @http.route('/dependencies_graph/js_assets', type='json', auth='user')
-    def get_js_assets(self, modules):
-        cr = http.request.cr
-        query = """SELECT arch_db
-                     FROM ir_ui_view v
-                LEFT JOIN ir_model_data md ON (md.model = 'ir.ui.view' AND md.res_id = v.id)"""
-        cr.execute(query + 'WHERE md.module IN %s', (tuple(modules),))
-        views = cr.fetchall()
-        scripts = []
-
-        for (view,) in views:
-            root = ET.fromstring(view)
-            for script in root.iter('script'):
-                if 'src' in script.attrib:
-                    scripts.append(script.attrib['src'])
-
-        return json.dumps({
-            'scripts': scripts
-        })
