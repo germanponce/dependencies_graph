@@ -230,7 +230,7 @@ odoo.define('dependencies_graph.graph', function (require) {
     w.models_graph = function (models, acyclic_graph) {
         var nodes = new vis.DataSet([]);
         var edges = new vis.DataSet([]);
-        var ignore = $('#odoo-model-ignore').val();
+        var ignore = $('#odoo-model-ignore').val() || [];
         var processed = ignore.slice(); // copy
         var depth = parseInt($('#odoo-model-depth').val());
 
@@ -248,14 +248,21 @@ odoo.define('dependencies_graph.graph', function (require) {
 
                 nodes.update({
                     id: model,
-                    label: model
+                    label: model,
+                    title: 'node'
                 });
                 _.each(relations, function (rel) {
                     nodes.update({
                         id: rel['relation'],
-                        label: rel['relation']
+                        label: rel['relation'],
+                        title: 'node'
                     });
-                    edges.update({from: model, to: rel['relation'], arrows: 'to', title: 'pepe'})
+                    edges.update({
+                        from: model,
+                        to: rel['relation'],
+                        arrows: 'to',
+                        title: w.generate_model_edge_tooltip(rel)
+                    })
                 });
             }
         }
@@ -351,6 +358,20 @@ odoo.define('dependencies_graph.graph', function (require) {
         var e = '<dl class="dl-horizontal">' +
             '<dt>name:</dt><dd>' + node['name'] + '</dd>' +
             '<dt>state:</dt><dd>' + node['state'] + '</dd>' +
+            '</dl>';
+        return e;
+    };
+
+    w.generate_model_edge_tooltip = function (rel) {
+        var e = '<dl class="dl-horizontal">' +
+            '<dt>field name:</dt><dd>' + rel['name'] + '</dd>' +
+            '<dt>field description:</dt><dd>' + rel['field_description'] + '</dd>' +
+            '<dt>type:</dt><dd>' + rel['ttype'] + '</dd>' +
+            '<dt>relation:</dt><dd>' + rel['relation'] + '</dd>' +
+            '<dt>relation field:</dt><dd>' + rel['relation_field'] + '</dd>' +
+            '<dt>relation table:</dt><dd>' + rel['relation_table'] + '</dd>' +
+            '<dt>column 1:</dt><dd>' + rel['column1'] + '</dd>' +
+            '<dt>column 2:</dt><dd>' + rel['column2'] + '</dd>' +
             '</dl>';
         return e;
     };

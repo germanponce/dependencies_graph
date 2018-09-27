@@ -72,7 +72,7 @@ class DependenciesGraph(http.Controller):
                 'relation_field': relation_field,
                 'readonly': readonly,
                 'required': required,
-                'relation_table': relation_field,
+                'relation_table': relation_table,
                 'column1': column1,
                 'column2': column2
             }
