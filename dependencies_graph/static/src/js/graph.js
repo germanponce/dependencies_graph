@@ -232,7 +232,7 @@ odoo.define('dependencies_graph.graph', function (require) {
         var edges = new vis.DataSet([]);
         var ignore = $('#odoo-model-ignore').val() || [];
         var processed = ignore.slice(); // copy
-        var depth = parseInt($('#odoo-model-depth').val());
+        var depth = parseInt($('#odoo-model-depth').val() || 1);
 
         var level = [models];
         for (var i = 0; i < depth; i++) {
@@ -249,13 +249,13 @@ odoo.define('dependencies_graph.graph', function (require) {
                 nodes.update({
                     id: model,
                     label: model,
-                    title: 'node'
+                    title: w.generate_model_node_tooltip(w.models[model])
                 });
                 _.each(relations, function (rel) {
                     nodes.update({
                         id: rel['relation'],
                         label: rel['relation'],
-                        title: 'node'
+                        title: w.generate_model_node_tooltip(w.models[rel['relation']])
                     });
                     edges.update({
                         from: model,
@@ -372,6 +372,23 @@ odoo.define('dependencies_graph.graph', function (require) {
             '<dt>relation table:</dt><dd>' + rel['relation_table'] + '</dd>' +
             '<dt>column 1:</dt><dd>' + rel['column1'] + '</dd>' +
             '<dt>column 2:</dt><dd>' + rel['column2'] + '</dd>' +
+            '</dl>';
+        return e;
+    };
+
+    w.generate_model_node_tooltip = function (model) {
+        var fields = '';
+        _.each(model, function (v, k) {
+            fields += '<dt>' + k + ':</dt><dd>' +
+                [v['ttype'],
+                    v['required'] ? '[required]' : '',
+                    v['readonly'] ? '[readonly]' : '',
+                    v['field_description']].join(' ') +
+                '</dd>'
+        });
+
+        var e = '<dl class="dl-horizontal">' +
+            fields +
             '</dl>';
         return e;
     };
