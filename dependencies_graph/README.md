@@ -1,23 +1,41 @@
 # Odoo Dependencies Graph
 
-This tool is aimed to help software developers to get a better understanding of the dependencies among the installed modules in an Odoo application.
-It also shows the dependencies graph of the JavaScript files defined in Odoo.
+This tool is aimed to help software developers to get a better understanding of the dependencies among the modules 
+and the models relationship in an Odoo application. It also shows the inheritance graph of JavaScript objects defined 
+in Odoo.
 
-We use the library [vis.js](http://visjs.org/) to render the graph.
+The library [vis.js](http://visjs.org/) is used to render the graph.
 
 ## Types of graph
 
-1. Odoo Module Children
+### Modules graph
 
-    Given an Odoo module it shows every module that depends of him directly or indirectly.
-    
-2. Odoo Module Parents
+1. Odoo Module Parents
 
-    Given an Odoo module it shows every module in which the module depends on. These are every modules that needs to be installed before him.
+    Given an Odoo module it shows every module in which the module depends on. These are the modules that need to be 
+    installed before it.
     
-3. JavaScript Graph
+2. Odoo Module Children
 
-    This is the graph of every JavaScript file declared using `odoo.define()` function. Every dependency is declared using `require()` function from Odoo.
+    Given an Odoo module it shows every module that depends of it directly or indirectly.
     
+A module can have redundant dependencies. The option `Acyclic graph` shows or hides these redundant dependencies. 
     
-In the `keywords` input you can filter the nodes shown in the graph.
+### Models graph
+
+Given some models it shows the relationship graph with other models.
+
+Some models, for example `res.users`, have relations with all models. The option `Ignore` exclude some models
+from the graph.
+
+The option `Depth` specifies how deep the graph is going to be. A lower value is recommended.
+
+### JS objects graph
+
+1. JavaScript Parents
+
+    Given some JavaScript constructor functions, the graph shows the functions (parents) which the given functions extend.
+    
+2. JavaScript Children
+
+    Given some JavaScript constructor functions, the graph shows the functions (children) that extend the given functions.
