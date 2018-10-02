@@ -9,11 +9,11 @@ odoo.define('dependencies_graph.graph', function (require) {
     var options = {
         configure: {
             enabled: true,
-            // filter: 'layout',
+            filter: 'layout',
             showButton: true
         },
         physics: {
-            enabled: false
+            enabled: true
         }
     };
 
