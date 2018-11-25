@@ -12,3 +12,7 @@
 #settings .vis-config-select {
     width: unset;
 }
+
+#info {
+    overflow-wrap: break-word;
+}

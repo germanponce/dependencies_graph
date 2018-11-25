@@ -83,6 +83,7 @@ odoo.define('dependencies_graph.graph', function (require) {
     };
 
     w.generate = function () {
+        $('#info').empty();
         var type = $('#type').val();
         var odoo_module = $('#odoo-module').val();
         var js_services = $('#js-module').val();
@@ -100,8 +101,20 @@ odoo.define('dependencies_graph.graph', function (require) {
             module = js_services;
         }
 
-        window.dependencies_graph[type](module, acyclic_graph).done(function () {
+        window.dependencies_graph[type](module, acyclic_graph).done(function (network, data) {
             console.log('generated', type, module);
+            
+            network.on("click", function (params) {
+                let selected = {
+                    title: ''
+                };
+                if (params.nodes.length > 0) {
+                    selected = data.nodes.get(params.nodes[0]);
+                } else if (params.edges.length > 0) {
+                    selected = data.edges.get(params.edges[0]);
+                }
+                $('#info').html(selected.title);
+            });
         });
     };
 
@@ -185,7 +198,7 @@ odoo.define('dependencies_graph.graph', function (require) {
             options['configure']['container'] = $('#settings')[0];
             var network = new vis.Network(container, data, options);
 
-            promise.resolve(network);
+            promise.resolve(network, data);
         });
         return promise;
     };
@@ -236,7 +249,7 @@ odoo.define('dependencies_graph.graph', function (require) {
             options['configure']['container'] = $('#settings')[0];
             var network = new vis.Network(container, data, options);
 
-            promise.resolve(network);
+            promise.resolve(network, data);
         });
         return promise;
     };
@@ -291,19 +304,7 @@ odoo.define('dependencies_graph.graph', function (require) {
         options['configure']['container'] = $('#settings')[0];
         var network = new vis.Network(container, data, options);
 
-        network.on("click", function (params) {
-            let selected = {
-                title: ''
-            };
-            if (params.nodes.length > 0) {
-                selected = nodes.get(params.nodes[0]);
-            } else if (params.edges.length > 0) {
-                selected = edges.get(params.edges[0]);
-            }
-            $('#info').html(selected.title);
-        });
-
-        return $.Deferred().resolve(network);
+        return $.Deferred().resolve(network, data);
     };
 
     w.js_graph = function (module, dependencies) {
@@ -368,7 +369,7 @@ odoo.define('dependencies_graph.graph', function (require) {
         options['configure']['container'] = $('#settings')[0];
         var network = new vis.Network(container, data, options);
 
-        promise.resolve(network);
+        promise.resolve(network, data);
         return promise;
     };
 
