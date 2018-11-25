@@ -4,7 +4,7 @@ odoo.define('dependencies_graph.graph', function (require) {
     var session = require('web.session');
 
     var w = window['dependencies_graph'] = {};
-    
+
     var selector = '#graph';
     var options = {
         configure: {
@@ -45,7 +45,9 @@ odoo.define('dependencies_graph.graph', function (require) {
                     .attr("value", key)
                     .text(key));
         });
-        module.chosen({search_contains: true});
+        module.chosen({
+            search_contains: true
+        });
     };
 
     w.set_odoo_modules = function () {
@@ -58,7 +60,9 @@ odoo.define('dependencies_graph.graph', function (require) {
                         .attr("value", key)
                         .text(key));
             });
-            module.chosen({search_contains: true});
+            module.chosen({
+                search_contains: true
+            });
         });
     };
 
@@ -72,7 +76,9 @@ odoo.define('dependencies_graph.graph', function (require) {
                         .attr("value", key)
                         .text(key));
             });
-            module.chosen({search_contains: true});
+            module.chosen({
+                search_contains: true
+            });
         });
     };
 
@@ -160,7 +166,11 @@ odoo.define('dependencies_graph.graph', function (require) {
                             color: deps[child]['state'] === 'installed' ? '#97c2fc' : '#ff797f',
                             title: w.generate_module_tooltip(deps[child])
                         });
-                        edges.update({from: m, to: child, arrows: 'to'})
+                        edges.update({
+                            from: m,
+                            to: child,
+                            arrows: 'to'
+                        })
                     }
                 })
             }
@@ -207,7 +217,11 @@ odoo.define('dependencies_graph.graph', function (require) {
                             color: deps[p]['state'] === 'installed' ? '#97c2fc' : '#ff797f',
                             title: w.generate_module_tooltip(deps[p])
                         });
-                        edges.update({from: p, to: m, arrows: 'to'})
+                        edges.update({
+                            from: p,
+                            to: m,
+                            arrows: 'to'
+                        })
                     }
                 })
             }
@@ -241,8 +255,8 @@ odoo.define('dependencies_graph.graph', function (require) {
                 var model = level[i].shift();
                 processed.push(model);
                 var relations = _.filter(w.models[model], function (v, k) {
-                    return _.contains(['one2many', 'many2one', 'many2many'], v['ttype'])
-                        && !_.contains(ignore, v['relation']);
+                    return _.contains(['one2many', 'many2one', 'many2many'], v['ttype']) &&
+                        !_.contains(ignore, v['relation']);
                 });
                 level[i + 1] = _.union(level[i + 1], _.difference(_.map(relations, r => r['relation']), processed));
 
@@ -260,8 +274,7 @@ odoo.define('dependencies_graph.graph', function (require) {
                     edges.update({
                         from: model,
                         to: rel['relation'],
-                        arrows: rel['ttype'] === 'many2one' ? 'to' :
-                            (rel['ttype'] === 'one2many' ? 'from' : 'from,to'),
+                        arrows: rel['ttype'] === 'many2one' ? 'to' : (rel['ttype'] === 'one2many' ? 'from' : 'from,to'),
                         title: w.generate_model_edge_tooltip(rel)
                     })
                 });
@@ -278,6 +291,18 @@ odoo.define('dependencies_graph.graph', function (require) {
         options['configure']['container'] = $('#settings')[0];
         var network = new vis.Network(container, data, options);
 
+        network.on("click", function (params) {
+            let selected = {
+                title: ''
+            };
+            if (params.nodes.length > 0) {
+                selected = nodes.get(params.nodes[0]);
+            } else if (params.edges.length > 0) {
+                selected = edges.get(params.edges[0]);
+            }
+            $('#info').html(selected.title);
+        });
+
         return $.Deferred().resolve(network);
     };
 
@@ -293,19 +318,39 @@ odoo.define('dependencies_graph.graph', function (require) {
             var m = modules.pop()
             var x = m[0];
             var x_value = m[1];
-            nodes.update({id: x, label: x, title: w.generate_js_tooltip(x_value)});
+            nodes.update({
+                id: x,
+                label: x,
+                title: w.generate_js_tooltip(x_value)
+            });
             _.each(services, function (y_value, y) {
                 if (dependencies) { // parents
                     if (x_value.prototype && Object.getPrototypeOf(x_value.prototype).constructor === y_value) {
-                        nodes.update({id: y, label: y, title: w.generate_js_tooltip(y_value)});
-                        edges.add({from: y, to: x, arrows: 'to'});
+                        nodes.update({
+                            id: y,
+                            label: y,
+                            title: w.generate_js_tooltip(y_value)
+                        });
+                        edges.add({
+                            from: y,
+                            to: x,
+                            arrows: 'to'
+                        });
 
                         modules.push([y, y_value]);
                     }
                 } else {
                     if (y_value.prototype && Object.getPrototypeOf(y_value.prototype).constructor === x_value) {
-                        nodes.update({id: y, label: y, title: w.generate_js_tooltip(y_value)});
-                        edges.add({from: x, to: y, arrows: 'to'});
+                        nodes.update({
+                            id: y,
+                            label: y,
+                            title: w.generate_js_tooltip(y_value)
+                        });
+                        edges.add({
+                            from: x,
+                            to: y,
+                            arrows: 'to'
+                        });
 
                         modules.push([y, y_value]);
                     }
@@ -344,8 +389,7 @@ odoo.define('dependencies_graph.graph', function (require) {
                 var str = value.toString();
                 str = str.substr(0, str.indexOf(')') + 1);
                 e.append($('<dd>' + str + '</dd>'))
-            }
-            else if (_.isObject(value)) {
+            } else if (_.isObject(value)) {
                 delete value['_super'];
                 e.append($('<dd>' + JSON.stringify(value) + '</dd>'))
             } else {
@@ -381,11 +425,11 @@ odoo.define('dependencies_graph.graph', function (require) {
     w.generate_model_node_tooltip = function (model) {
         var fields = '';
         _.each(model, function (v, k) {
-            fields += '<dt>' + k + ':</dt><dd>' +
-                [v['ttype'],
+            fields += '<dt>' + k + ':</dt><dd>' + [v['ttype'],
                     v['required'] ? '[required]' : '',
                     v['readonly'] ? '[readonly]' : '',
-                    v['field_description']].join(' ') +
+                    v['field_description']
+                ].join(' ') +
                 '</dd>'
         });
 
